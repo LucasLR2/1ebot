@@ -25,6 +25,7 @@ async def main():
         await bot.load_extension("bump_tracker")
         await bot.load_extension("channelcontrol")
         await bot.load_extension("usercommands")
+        await bot.load_extension("embed_commands")
         await bot.start(os.getenv('TOKEN'))
 
 asyncio.run(main())

@@ -55,24 +55,6 @@ class AdminCommands(commands.Cog):
         confirm = await ctx.send("Canal limpiado.")
         await confirm.delete(delay=3)
 
-    @commands.command(name="iniciobumps")
-    @commands.has_permissions(administrator=True)
-    async def iniciobumps(self, ctx: commands.Context) -> None:
-        """Envía el embed inicial con el botón para suscribirse al rol de bump."""
-        embed = discord.Embed(
-            title="🚀 ¡Este es el inicio del canal de bumps!",
-            description=(
-                "🔝 Usa **`/bump`** para bumpear el servidor y ayudarnos a crecer.\n"
-                "📊 Usa **`!misbumps`** para ver cuántos bumps llevas.\n"
-                "🏆 Usa **`!clasificacion`** para ver la clasificación.\n"
-                "🎁 Pronto podrás canjear recompensas con tus bumps. ¡Atento!"
-            ),
-            color=EMBED_COLOR,
-            timestamp=datetime.now(timezone.utc)
-        )
-        # La vista nueva se envía con el embed
-        await ctx.send(embed=embed, view=BumpRoleView())
-
 # ────────────────────────── setup para discord.py v2.x ──────────────────────────
 async def setup(bot: commands.Bot) -> None:
     # Añade el cog
