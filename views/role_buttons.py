@@ -24,3 +24,31 @@ class RoleButtonView(discord.ui.View):
         else:
             await interaction.user.add_roles(role)
             await interaction.response.send_message(f"✅ ¡Rol `{role.name}` asignado!", ephemeral=True)
+
+class VerificacionView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label="✅ Verificarse", style=discord.ButtonStyle.success, custom_id="verificar_button")
+    async def verificar(self, interaction: discord.Interaction, button: discord.ui.Button):
+        rol_id = 1391832974361886740
+        rol = interaction.guild.get_role(rol_id)
+
+        if rol is None:
+            await interaction.response.send_message(
+                "❌ No se encontró el rol de verificación. Contacta a un administrador.",
+                ephemeral=True
+            )
+            return
+
+        if rol in interaction.user.roles:
+            await interaction.response.send_message(
+                "⚠️ Ya estás verificado.",
+                ephemeral=True
+            )
+        else:
+            await interaction.user.add_roles(rol)
+            await interaction.response.send_message(
+                "✅ ¡Has sido verificado correctamente!",
+                ephemeral=True
+            )

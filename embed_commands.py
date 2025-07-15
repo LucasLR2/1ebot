@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from datetime import datetime, timezone
-from views.role_buttons import RoleButtonView
+from views.role_buttons import RoleButtonView, VerificacionView
 
 BUMPER_ROLE_ID = 1392903420020658196
 RESEÑADOR_ROLE_ID = 1394444010436956316
@@ -141,6 +141,19 @@ class EmbedCommands(commands.Cog):
         )
         embed.set_footer(text="1€Bot • ¡Participá gratis con reseñas!")
         await ctx.send(embed=embed, view=RoleButtonView(RESEÑADOR_ROLE_ID))
+
+    @commands.command(name="everificacion")
+    @commands.has_permissions(administrator=True)
+    async def everificacion(self, ctx):
+        embed = discord.Embed(
+            title="🔒 Verificación",
+            description="Haz clic en el botón de abajo para verificarte y acceder al resto del servidor.",
+            color=discord.Color.green()
+        )
+        embed.set_footer(text="Sistema de verificación • 1ebot")
+
+        view = VerificacionView()
+        await ctx.send(embed=embed, view=view)
 
 # ──────────────────────── Setup para discord.py v2.x ────────────────────────
 async def setup(bot: commands.Bot) -> None:
