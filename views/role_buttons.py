@@ -52,3 +52,22 @@ class VerificacionView(discord.ui.View):
                 "✅ ¡Has sido verificado correctamente!",
                 ephemeral=True
             )
+
+class VerAvisosView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(emoji="🔔", label="Notificaciones", style=discord.ButtonStyle.primary, custom_id="rol_avisos")
+    async def toggle_notificaciones(self, interaction: discord.Interaction, button: discord.ui.Button):
+        rol_id = 1394757542919540776
+        rol = interaction.guild.get_role(rol_id)
+
+        if rol is None:
+            await interaction.response.send_message("❌ No encontré el rol de notificaciones. Contactá a un admin.", ephemeral=True)
+            return
+
+        if rol in interaction.user.roles:
+            await interaction.response.send_message("⚠️ Ya tenés el rol de notificaciones.", ephemeral=True)
+        else:
+            await interaction.user.add_roles(rol)
+            await interaction.response.send_message("✅ Ahora vas a recibir notificaciones.", ephemeral=True)

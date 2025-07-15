@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 from datetime import datetime, timezone
-from views.role_buttons import RoleButtonView, VerificacionView
+import asyncio
+from views.role_buttons import RoleButtonView, VerificacionView, VerAvisosView
 
 BUMPER_ROLE_ID = 1392903420020658196
 RESEÑADOR_ROLE_ID = 1394444010436956316
@@ -154,6 +155,56 @@ class EmbedCommands(commands.Cog):
 
         view = VerificacionView()
         await ctx.send(embed=embed, view=view)
+
+    @commands.command(name="aviso")
+    @commands.has_permissions(administrator=True)
+    async def aviso(self, ctx):
+        rol_id_mencion = 1394757542919540776
+        canal_id_aviso = 1391833217815941253
+
+        rol_mencion = ctx.guild.get_role(rol_id_mencion)
+        canal_destino = ctx.guild.get_channel(canal_id_aviso)
+
+        def check(m):
+            return m.author == ctx.author and m.channel == ctx.channel
+
+        try:
+            # Verificar si el canal existe antes de continuar
+            if canal_destino is None:
+                await ctx.send("❌ No pude encontrar el canal de avisos. Revisá el ID.")
+                return
+
+            await ctx.send("📌 ¿Cuál es el **título** del aviso?")
+            titulo_msg = await self.bot.wait_for('message', check=check, timeout=60)
+            titulo = titulo_msg.content
+
+            await ctx.send("📝 ¿Cuál es la **descripción** del aviso?")
+            desc_msg = await self.bot.wait_for('message', check=check, timeout=120)
+            descripcion = desc_msg.content
+
+            embed = discord.Embed(
+                title=titulo,
+                description=descripcion,
+                color=discord.Color.orange()
+            )
+            embed.set_footer(text="Aviso del staff • 1ebot")
+
+            view = VerAvisosView()
+
+            # Enviar el aviso al canal
+            if rol_mencion:
+                await canal_destino.send(content=rol_mencion.mention, embed=embed, view=view)
+            else:
+                await canal_destino.send(embed=embed, view=view)
+
+            # Confirmar al usuario
+            await ctx.send("✅ Aviso enviado correctamente al canal designado.")
+
+        except asyncio.TimeoutError:
+            await ctx.send("⌛ Se acabó el tiempo. Ejecutá `!aviso` de nuevo.")
+        except Exception as e:
+            await ctx.send(f"❌ Ocurrió un error: {str(e)}")
+
 
 # ──────────────────────── Setup para discord.py v2.x ────────────────────────
 async def setup(bot: commands.Bot) -> None:
