@@ -1,5 +1,9 @@
 import asyncpg
 import os
+import asyncio
+from dotenv import load_dotenv
+
+load_dotenv()  # Cargar las variables del archivo .env si existe
 
 DB_URL = os.getenv("DATABASE_URL")
 
@@ -8,6 +12,8 @@ async def connect():
 
 async def setup():
     conn = await connect()
+
+    # Crear tabla bumps
     await conn.execute('''
         CREATE TABLE IF NOT EXISTS bumps (
             user_id TEXT NOT NULL,
@@ -16,6 +22,17 @@ async def setup():
             PRIMARY KEY (user_id, guild_id)
         );
     ''')
+
+    # Crear tabla euros (economía)
+    await conn.execute('''
+        CREATE TABLE IF NOT EXISTS euros (
+            user_id TEXT NOT NULL,
+            guild_id TEXT NOT NULL,
+            balance FLOAT DEFAULT 0,
+            PRIMARY KEY (user_id, guild_id)
+        );
+    ''')
+
     await conn.close()
 
 async def add_bump(user_id: int, guild_id: int) -> int:
@@ -53,3 +70,7 @@ async def get_all_bumps(guild_id):
     ''', str(guild_id))
     await conn.close()
     return [(row['user_id'], row['count']) for row in rows]
+
+# Ejecutar setup si se llama directamente este script
+if __name__ == "__main__":
+    asyncio.run(setup())
