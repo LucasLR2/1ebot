@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 DB_URL = os.getenv("DATABASE_URL")
 
+# Constantes
 MAX_AMOUNT = 1000000.0
 MIN_AMOUNT = 0.01
 
@@ -73,125 +74,6 @@ class Economia(commands.Cog):
         if amount > MAX_AMOUNT:
             return False, f"❌ El monto máximo es {format_currency(MAX_AMOUNT)}."
         return True, ""
-
-    @commands.command(name="adde")
-    @commands.has_permissions(administrator=True)
-    async def adde(self, ctx, member: discord.Member, amount: float):
-        """Agrega euros a un usuario (solo admins)."""
-        valid, error_msg = self.validate_amount(amount)
-        if not valid:
-            await ctx.send(error_msg)
-            return
-
-        guild_id = str(ctx.guild.id)
-        user_id = str(member.id)
-
-        if not await self.ensure_user(user_id, guild_id):
-            await ctx.send("❌ Error al acceder a la base de datos.")
-            return
-
-        try:
-            async with get_connection() as conn:
-                await conn.execute("""
-                    UPDATE euros
-                    SET balance = balance + $1
-                    WHERE user_id = $2 AND guild_id = $3;
-                """, amount, user_id, guild_id)
-
-            embed = discord.Embed(
-                title="Saldo Modificado",
-                description=f"Se añadieron:\n\n```{format_currency(amount)}```\na {member.mention}.",
-                color=discord.Color.green()
-            )
-            await ctx.send(embed=embed)
-            logger.info(f"Admin {ctx.author.id} añadió {amount} a {member.id} en guild {guild_id}")
-
-        except Exception as e:
-            logger.error(f"Error en comando adde: {e}")
-            await ctx.send("❌ Error al procesar la transacción.")
-
-    @commands.command(name="removee")
-    @commands.has_permissions(administrator=True)
-    async def removee(self, ctx, member: discord.Member, amount: float):
-        """Remueve euros de un usuario (solo admins)."""
-        valid, error_msg = self.validate_amount(amount)
-        if not valid:
-            await ctx.send(error_msg)
-            return
-
-        guild_id = str(ctx.guild.id)
-        user_id = str(member.id)
-
-        if not await self.ensure_user(user_id, guild_id):
-            await ctx.send("❌ Error al acceder a la base de datos.")
-            return
-
-        try:
-            async with get_connection() as conn:
-                current_balance = await self.get_balance(user_id, guild_id)
-                if current_balance is None:
-                    await ctx.send("❌ Error al obtener el balance del usuario.")
-                    return
-
-                new_balance = max(0, current_balance - amount)
-                removed_amount = current_balance - new_balance
-
-                await conn.execute("""
-                    UPDATE euros
-                    SET balance = $1
-                    WHERE user_id = $2 AND guild_id = $3;
-                """, new_balance, user_id, guild_id)
-
-            embed = discord.Embed(
-                title="Saldo Modificado",
-                description=f"Se removieron:\n\n```{format_currency(removed_amount)}```\nde {member.mention}.",
-                color=discord.Color.red()
-            )
-            await ctx.send(embed=embed)
-            logger.info(f"Admin {ctx.author.id} removió {removed_amount} de {member.id} en guild {guild_id}")
-
-        except Exception as e:
-            logger.error(f"Error en comando removee: {e}")
-            await ctx.send("❌ Error al procesar la transacción.")
-
-    @commands.command(name="reset_economia")
-    @commands.has_permissions(administrator=True)
-    async def reset_economia(self, ctx):
-        """Resetea toda la economía del servidor (solo admins)."""
-        guild_id = str(ctx.guild.id)
-
-        embed = discord.Embed(
-            title="⚠️ Confirmación Requerida",
-            description="¿Estás seguro de que quieres resetear toda la economía del servidor?\n\n**Esta acción no se puede deshacer.**",
-            color=discord.Color.red()
-        )
-
-        msg = await ctx.send(embed=embed)
-        await msg.add_reaction("✅")
-        await msg.add_reaction("❌")
-
-        def check(reaction, user):
-            return user == ctx.author and str(reaction.emoji) in ["✅", "❌"] and reaction.message.id == msg.id
-
-        try:
-            reaction, user = await self.bot.wait_for("reaction_add", timeout=30.0, check=check)
-
-            if str(reaction.emoji) == "✅":
-                async with get_connection() as conn:
-                    await conn.execute("""
-                        DELETE FROM euros WHERE guild_id = $1;
-                    """, guild_id)
-
-                await ctx.send("🔄 Economía del servidor reseteada exitosamente.")
-                logger.info(f"Admin {ctx.author.id} reseteó la economía del guild {guild_id}")
-            else:
-                await ctx.send("❌ Operación cancelada.")
-
-        except Exception as e:
-            logger.error(f"Error en reset_economia: {e}")
-            await ctx.send("❌ Error al resetear la economía.")
-
-    # Los otros comandos ya están en tu código original (dar, banco, top, cuenta)
 
     @commands.command(name="banco")
     async def banco(self, ctx):
@@ -333,21 +215,117 @@ class Economia(commands.Cog):
             color=discord.Color.blue()
         )
         await ctx.send(embed=embed)
+    
+    @commands.command(name="adde")
+    @commands.has_permissions(administrator=True)
+    async def adde(self, ctx, member: discord.Member, amount: float):
+        """Agrega euros a un usuario (solo admins)."""
+        valid, error_msg = self.validate_amount(amount)
+        if not valid:
+            await ctx.send(error_msg)
+            return
 
-    # Manejo de errores
-    @adde.error
-    @removee.error
-    @dar.error
-    async def economy_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Faltan argumentos. Usa `!help <comando>` para ver la sintaxis.")
-        elif isinstance(error, commands.MissingPermissions):
-            await ctx.send("❌ No tienes permisos para usar este comando.")
-        elif isinstance(error, commands.BadArgument):
-            await ctx.send("❌ Formato inválido. Asegúrate de mencionar al usuario y usar un número válido.")
-        else:
-            logger.error(f"Error no manejado en economía: {error}")
-            await ctx.send("❌ Ocurrió un error inesperado.")
+        guild_id = str(ctx.guild.id)
+        user_id = str(member.id)
+
+        if not await self.ensure_user(user_id, guild_id):
+            await ctx.send("❌ Error al acceder a la base de datos.")
+            return
+
+        try:
+            async with get_connection() as conn:
+                await conn.execute("""
+                    UPDATE euros
+                    SET balance = balance + $1
+                    WHERE user_id = $2 AND guild_id = $3;
+                """, amount, user_id, guild_id)
+
+            await ctx.send(f"Se añadieron €{amount:,.2f} a {member.mention}.")
+            logger.info(f"Admin {ctx.author.id} añadió {amount} a {member.id} en guild {guild_id}")
+
+        except Exception as e:
+            logger.error(f"Error en comando adde: {e}")
+            await ctx.send("❌ Error al procesar la transacción.")
+
+
+    @commands.command(name="removee")
+    @commands.has_permissions(administrator=True)
+    async def removee(self, ctx, member: discord.Member, amount: float):
+        """Remueve euros de un usuario (solo admins)."""
+        valid, error_msg = self.validate_amount(amount)
+        if not valid:
+            await ctx.send(error_msg)
+            return
+
+        guild_id = str(ctx.guild.id)
+        user_id = str(member.id)
+
+        if not await self.ensure_user(user_id, guild_id):
+            await ctx.send("❌ Error al acceder a la base de datos.")
+            return
+
+        try:
+            async with get_connection() as conn:
+                current_balance = await self.get_balance(user_id, guild_id)
+                if current_balance is None:
+                    await ctx.send("❌ Error al obtener el balance del usuario.")
+                    return
+
+                new_balance = max(0, current_balance - amount)
+                actual_removed = current_balance - new_balance
+
+                await conn.execute("""
+                    UPDATE euros
+                    SET balance = $1
+                    WHERE user_id = $2 AND guild_id = $3;
+                """, new_balance, user_id, guild_id)
+
+            await ctx.send(f"Se removieron €{actual_removed:,.2f} de {member.mention}.")
+            logger.info(f"Admin {ctx.author.id} removió {actual_removed} de {member.id} en guild {guild_id}")
+
+        except Exception as e:
+            logger.error(f"Error en comando removee: {e}")
+            await ctx.send("❌ Error al procesar la transacción.")
+
+
+    @commands.command(name="reset_economia")
+    @commands.has_permissions(administrator=True)
+    async def reset_economia(self, ctx):
+        """Resetea toda la economía del servidor (solo admins)."""
+        guild_id = str(ctx.guild.id)
+
+        embed = discord.Embed(
+            title="⚠️ Confirmación Requerida",
+            description="¿Estás seguro de que quieres resetear toda la economía del servidor?\n\n**Esta acción no se puede deshacer.**",
+            color=discord.Color.red()
+        )
+
+        msg = await ctx.send(embed=embed)
+        await msg.add_reaction("✅")
+        await msg.add_reaction("❌")
+
+        def check(reaction, user):
+            return user == ctx.author and str(reaction.emoji) in ["✅", "❌"] and reaction.message.id == msg.id
+
+        try:
+            reaction, user = await self.bot.wait_for("reaction_add", timeout=30.0, check=check)
+
+            if str(reaction.emoji) == "✅":
+                async with get_connection() as conn:
+                    await conn.execute("""
+                        DELETE FROM euros WHERE guild_id = $1;
+                    """, guild_id)
+
+                await ctx.send("Economía del servidor reseteada exitosamente.")
+                logger.info(f"Admin {ctx.author.id} reseteó la economía del guild {guild_id}")
+
+            else:
+                await ctx.send("Operación cancelada.")
+
+        except Exception as e:
+            logger.error(f"Error en reset_economia: {e}")
+            await ctx.send("❌ Error al resetear la economía.")
+
 
 async def setup(bot):
     await bot.add_cog(Economia(bot))
