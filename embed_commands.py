@@ -156,6 +156,34 @@ class EmbedCommands(commands.Cog):
         view = VerificacionView()
         await ctx.send(embed=embed, view=view)
 
+    @commands.command(name="eeconomia")
+    @commands.has_permissions(administrator=True)
+    async def eeconomia(self, ctx):
+        canal_id = 1395050940486385734
+        canal_destino = ctx.guild.get_channel(canal_id)
+
+        if canal_destino is None:
+            await ctx.send("❌ No pude encontrar el canal de economía. Revisá el ID.")
+            return
+
+        embed = discord.Embed(
+            title="📊 !eeconomia",
+            description=(
+                "Aquí puedes consultar tu saldo y hacer transferencias.\n\n"
+                "**Comandos disponibles:**\n"
+                "`!cuenta` - Consulta tu saldo o el de otro usuario.\n"
+                "`!dar @usuario cantidad` - Envía euros a otro usuario.\n"
+                "`!top [n]` - Muestra el ranking de los usuarios con más euros (máx 20).\n"
+                "\n*Los comandos de administración requieren permisos específicos.*"
+            ),
+            color=discord.Color.green()
+        )
+        embed.set_footer(text="Economía • 1ebot")
+
+        await canal_destino.send(embed=embed)
+        await ctx.send("✅ Aviso de economía enviado correctamente.")
+
+
     @commands.command(name="aviso")
     @commands.has_permissions(administrator=True)
     async def aviso(self, ctx):
