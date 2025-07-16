@@ -203,12 +203,10 @@ class EmbedCommands(commands.Cog):
             )
             embed.set_footer(text="Aviso del staff • 1€Bot")
 
-            view = VerAvisosView()
-
             if rol_mencion:
-                await canal_destino.send(content=rol_mencion.mention, embed=embed, view=view)
+                await canal_destino.send(content=rol_mencion.mention, embed=embed)
             else:
-                await canal_destino.send(embed=embed, view=view)
+                await canal_destino.send(embed=embed)
 
             await ctx.send("✅ Aviso enviado correctamente al canal designado.")
 
