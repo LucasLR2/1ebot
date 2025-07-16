@@ -28,7 +28,10 @@ class UserCommands(commands.Cog):
             await ctx.send(f"⚠️ Este comando sólo puede usarse en <#{self.user_commands_channel_id}>.")
             return
 
-        bumps = self.get_bumps(ctx.author.id)
+        from database import get_bumps
+
+        bumps = await get_bumps(ctx.author.id, ctx.guild.id)
+
         embed = discord.Embed(
             description=f"💪 {ctx.author.mention}, actualmente tienes **{bumps}** bumps en total. ¡Excelente trabajo!",
             color=0x00ffff,

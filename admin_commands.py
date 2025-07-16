@@ -49,10 +49,18 @@ class AdminCommands(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def clear(self, ctx: commands.Context) -> None:
-        """Borra todos los mensajes del canal y confirma."""
-        await ctx.channel.purge()
-        confirm = await ctx.send("Canal limpiado.")
+    async def clear(self, ctx: commands.Context, cantidad: int = None) -> None:
+        """Borra todos los mensajes o una cantidad específica."""
+
+        if cantidad is None:
+            # Borrar todo: se borran de a bloques (Discord limita 100 a la vez)
+            await ctx.channel.purge()
+            confirm = await ctx.send("🧹 Canal limpiado completamente.")
+        else:
+            # Borrar sólo los últimos `cantidad + 1` mensajes (incluye el comando)
+            deleted = await ctx.channel.purge(limit=cantidad + 1)
+            confirm = await ctx.send(f"✅ Se eliminaron {len(deleted) - 1} mensajes.")
+        
         await confirm.delete(delay=3)
 
 # ────────────────────────── Comandos de administración de base de datos ──────────────────────────
