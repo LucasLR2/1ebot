@@ -167,18 +167,17 @@ class EmbedCommands(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="📊 !eeconomia",
+            title="【🏦-𝙱𝙰𝙽𝙲𝙾】",
             description=(
                 "Aquí puedes consultar tu saldo y hacer transferencias.\n\n"
                 "**Comandos disponibles:**\n"
                 "`!cuenta` - Consulta tu saldo o el de otro usuario.\n"
                 "`!dar @usuario cantidad` - Envía euros a otro usuario.\n"
                 "`!top [n]` - Muestra el ranking de los usuarios con más euros (máx 20).\n"
-                "\n*Los comandos de administración requieren permisos específicos.*"
             ),
             color=discord.Color.green()
         )
-        embed.set_footer(text="Economía • 1ebot")
+        embed.set_footer(text="Economía • 1€Bot")
 
         await canal_destino.send(embed=embed)
         await ctx.send("✅ Aviso de economía enviado correctamente.")
@@ -215,7 +214,7 @@ class EmbedCommands(commands.Cog):
                 description=descripcion,
                 color=discord.Color.orange()
             )
-            embed.set_footer(text="Aviso del staff • 1ebot")
+            embed.set_footer(text="Aviso del staff • 1€Bot")
 
             view = VerAvisosView()
 
