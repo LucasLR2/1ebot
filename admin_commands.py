@@ -13,10 +13,10 @@ class BumpRoleButton(Button):
         super().__init__(
             label="🔔 Quiero que me recuerden bumpear",
             style=discord.ButtonStyle.primary,
-            custom_id="toggle_bump_role"   # ← necesario para vista persistente
+            custom_id="toggle_bump_role"  
         )
 
-    async def callback(self, interaction: discord.Interaction) -> None:  # type: ignore
+    async def callback(self, interaction: discord.Interaction) -> None:  
         role = interaction.guild.get_role(ROLE_ID)
         if role is None:
             await interaction.response.send_message(
@@ -54,6 +54,21 @@ class AdminCommands(commands.Cog):
         await ctx.channel.purge()
         confirm = await ctx.send("Canal limpiado.")
         await confirm.delete(delay=3)
+
+# ────────────────────────── Comandos de administración de base de datos ──────────────────────────
+    @commands.command(name="setbumps")
+    @commands.has_permissions(administrator=True)
+    async def set_bumps(self, ctx, user: discord.Member, cantidad: int):
+        from database import connect
+        conn = await connect()
+        await conn.execute('''
+            INSERT INTO bumps (user_id, guild_id, count)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (user_id, guild_id)
+            DO UPDATE SET count = $3;
+        ''', str(user.id), str(ctx.guild.id), cantidad)
+        await conn.close()
+        await ctx.send(f"✅ Se establecieron **{cantidad}** bumps para {user.mention}.")
 
 # ────────────────────────── setup para discord.py v2.x ──────────────────────────
 async def setup(bot: commands.Bot) -> None:
