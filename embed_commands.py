@@ -184,7 +184,7 @@ class EmbedCommands(commands.Cog):
 
     @commands.command(name="eresena")
     @commands.has_permissions(administrator=True)
-    async def aviso(self, ctx, cantidad: int = 2): 
+    async def aviso_resena(self, ctx, cantidad: int = 2): 
         rol_id_mencion = 1394444010436956316
         canal_id_aviso = 1394797177351573514
 
@@ -214,6 +214,7 @@ class EmbedCommands(commands.Cog):
 
         except Exception as e:
             await ctx.send(f"❌ Ocurrió un error: {str(e)}")
+
 
 
     @commands.command(name="aviso")
