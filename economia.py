@@ -173,8 +173,8 @@ class Economia(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="🏦 Estado de Cuenta",
-            description=f"{ctx.author.mention}, tienes {format_currency(balance)} en el banco.",
+            title="Estado de Cuenta",
+            description=f"{ctx.author.mention}, tienes:\n\n```€{balance:,.2f}```\nen el banco.",
             color=discord.Color.blue()
         )
         await ctx.send(embed=embed)
