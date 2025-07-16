@@ -182,6 +182,39 @@ class EmbedCommands(commands.Cog):
         await canal_destino.send(embed=embed)
         await ctx.send("✅ Aviso de economía enviado correctamente.")
 
+    @commands.command(name="eresena")
+    @commands.has_permissions(administrator=True)
+    async def aviso(self, ctx, cantidad: int = 2):  # Valor por defecto: 2
+        rol_id_mencion = 1394757542919540776
+        canal_id_aviso = 1391833217815941253
+
+        rol_mencion = ctx.guild.get_role(rol_id_mencion)
+        canal_destino = ctx.guild.get_channel(canal_id_aviso)
+
+        try:
+            if canal_destino is None:
+                await ctx.send("❌ No pude encontrar el canal de avisos. Revisá el ID.")
+                return
+
+            embed = discord.Embed(
+                title="📢 ¡Nuevas reseñas disponibles!",
+                description=f"Hay {cantidad} reseña{'s' if cantidad != 1 else ''} disponible{'s' if cantidad != 1 else ''}, abre ticket para hacerla{'s' if cantidad != 1 else ''} y ganar '€'",
+                color=discord.Color.orange()
+            )
+            embed.set_footer(text="Aviso del staff • 1€Bot")
+
+            view = VerAvisosView()
+
+            if rol_mencion:
+                await canal_destino.send(content=rol_mencion.mention, embed=embed, view=view)
+            else:
+                await canal_destino.send(embed=embed, view=view)
+
+            await ctx.send("✅ Aviso enviado correctamente al canal designado.")
+
+        except Exception as e:
+            await ctx.send(f"❌ Ocurrió un error: {str(e)}")
+
 
     @commands.command(name="aviso")
     @commands.has_permissions(administrator=True)
