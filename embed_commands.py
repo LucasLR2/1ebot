@@ -167,7 +167,7 @@ class EmbedCommands(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="【🏦-𝙱𝙰𝙽𝙲𝙾】",
+            title="𝙱𝙰𝙽𝙲𝙾",
             description=(
                 "Aquí puedes consultar tu saldo y hacer transferencias.\n\n"
                 "**Comandos disponibles:**\n"
