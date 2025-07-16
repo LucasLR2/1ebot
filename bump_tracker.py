@@ -119,7 +119,7 @@ class BumpTracker(commands.Cog):
         )
 
         embed = discord.Embed(
-            title="🌟 Clasificación de Bumps",
+            title="🏆 Clasificación de Bumps",
             description=top,
             color=EMBED_COLOR
         )
