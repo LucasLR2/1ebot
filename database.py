@@ -1,5 +1,4 @@
 import asyncpg
-import aiosqlite
 import os
 
 DB_URL = os.getenv("DATABASE_URL")
