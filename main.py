@@ -3,6 +3,7 @@ from discord.ext import commands
 import os
 from dotenv import load_dotenv
 import asyncio
+from database import setup
 
 load_dotenv()
 
@@ -26,6 +27,7 @@ async def main():
         await bot.load_extension("channelcontrol")
         await bot.load_extension("usercommands")
         await bot.load_extension("embed_commands")
+        await setup()
         await bot.start(os.getenv('TOKEN'))
 
 asyncio.run(main())
