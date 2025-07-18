@@ -296,7 +296,27 @@ class EmbedCommands(commands.Cog):
             ),
             color=discord.Color.gold()
         )
-        embed.set_footer(text="1€Bot • Sistema de economía")
+        embed.set_footer(text="Economía • 1€Bot")
+        await ctx.send(embed=embed)
+
+    @commands.command(name='etienda')
+    @commands.has_permissions(administrator=True)
+    async def canal_tienda(self, ctx):
+        embed = discord.Embed(
+            title="🛒 𝑻𝑰𝑬𝑵𝑫𝑨",
+            description=(
+                "¡Bienvenido a la tienda del servidor! Aquí podés **ver los productos disponibles** y **comprarlos con tus € ganados**.\n\n"
+                "🛍️ **¿Qué podés hacer en este canal?**\n"
+                "• Consultar la lista de objetos disponibles.\n"
+                "• Comprar artículos exclusivos con comandos sencillos.\n\n"
+                "💬 **Comandos disponibles:**\n"
+                "`!tienda` – Muestra todos los productos disponibles.\n"
+                "`!objetos` – Muestra tus productos.\n"
+                "`!comprar nombre_del_objeto` – Compra un objeto si tenés suficiente saldo.\n\n"
+            ),
+            color=discord.Color.teal()
+        )
+        embed.set_footer(text="Economía • 1€Bot")
         await ctx.send(embed=embed)
 
 # ──────────────────────── Setup para discord.py v2.x ────────────────────────
