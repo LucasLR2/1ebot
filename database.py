@@ -33,6 +33,25 @@ async def setup():
         );
     ''')
 
+    # Crear tabla tienda (tienda)
+    await conn.execute('''
+        CREATE TABLE tienda (
+        id SERIAL PRIMARY KEY,
+        nombre TEXT NOT NULL UNIQUE,
+        precio INTEGER NOT NULL CHECK (precio >= 0)
+    );
+    ''')
+
+    # Crear tabla inventario (inventario de usuarios)
+    await conn.execute('''
+        CREATE TABLE inventario (
+        id SERIAL PRIMARY KEY,
+        usuario_id BIGINT NOT NULL,
+        objeto_id INTEGER NOT NULL REFERENCES tienda(id) ON DELETE CASCADE,
+        cantidad INTEGER NOT NULL DEFAULT 1 CHECK (cantidad > 0)
+    );
+    ''')
+
     await conn.close()
 
 async def add_bump(user_id: int, guild_id: int) -> int:

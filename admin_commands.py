@@ -1,4 +1,5 @@
 # admin_commands.py
+import asyncpg
 import discord
 from discord.ext import commands
 from discord.ui import View, Button
@@ -77,6 +78,46 @@ class AdminCommands(commands.Cog):
         ''', str(user.id), str(ctx.guild.id), cantidad)
         await conn.close()
         await ctx.send(f"✅ Se establecieron **{cantidad}** bumps para {user.mention}.")
+
+    @commands.command(name='addobj')
+    @commands.has_permissions(administrator=True)
+    async def agregar_objeto(self, ctx, nombre: str, precio: int):
+        try:
+            await self.bot.db.execute(
+                "INSERT INTO tienda (nombre, precio) VALUES ($1, $2)",
+                nombre, precio
+            )
+            await ctx.send(f"✅ Objeto **{nombre}** agregado a la tienda por **{precio}€**.")
+        except asyncpg.UniqueViolationError:
+            await ctx.send("❌ Ese objeto ya existe en la tienda.")
+        except Exception as e:
+            await ctx.send(f"⚠️ Error al agregar el objeto: {e}")
+    
+    @commands.command(name='editobj')
+    @commands.has_permissions(administrator=True)
+    async def editar_objeto(self, ctx, nombre: str, nuevo_precio: int):
+        resultado = await self.bot.db.execute(
+            "UPDATE tienda SET precio = $1 WHERE nombre = $2",
+            nuevo_precio, nombre
+        )
+
+        if resultado == "UPDATE 0":
+            await ctx.send("❌ No se encontró un objeto con ese nombre.")
+        else:
+            await ctx.send(f"✏️ El objeto **{nombre}** ahora cuesta **{nuevo_precio}€**.")
+
+    @commands.command(name='delobj')
+    @commands.has_permissions(administrator=True)
+    async def eliminar_objeto(self, ctx, nombre: str):
+        resultado = await self.bot.db.execute(
+            "DELETE FROM tienda WHERE nombre = $1",
+            nombre
+        )
+
+        if resultado == "DELETE 0":
+            await ctx.send("❌ No se encontró un objeto con ese nombre.")
+        else:
+            await ctx.send(f"🗑️ El objeto **{nombre}** fue eliminado de la tienda.")
 
 # ────────────────────────── setup para discord.py v2.x ──────────────────────────
 async def setup(bot: commands.Bot) -> None:
