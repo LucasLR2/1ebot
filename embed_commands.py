@@ -267,25 +267,37 @@ class EmbedCommands(commands.Cog):
     @commands.command(name='efuncionamiento')
     @commands.has_permissions(administrator=True)
     async def canal_funcionamiento(self, ctx):
+        # Reemplazá estos IDs por los reales
+        canal_banco_id = 1395050940486385734  # 💸-banco
+        canal_tienda_id = 1395783024662024223  # 🛒-tienda
+        canal_resenas_id = 1394797177351573514  # 📝-reseñas
+
+        # Referencias de canales
+        canal_banco = ctx.guild.get_channel(canal_banco_id)
+        canal_tienda = ctx.guild.get_channel(canal_tienda_id)
+        canal_resenas = ctx.guild.get_channel(canal_resenas_id)
+
         embed = discord.Embed(
             title="💸 𝑭𝑼𝑵𝑪𝑰𝑶𝑵𝑨𝑴𝑰𝑬𝑵𝑻𝑶 – Economía del Servidor",
             description=(
-                "📌 En esta sección vas a encontrar todo lo relacionado a la **economía interna del servidor**.\n\n"
-                "💼 En **【💸-𝙴𝙲𝙾𝙽𝙾𝙼Í𝙰】** podés:\n"
-                "• Ver tu saldo y el de otros miembros.\n"
-                "• Transferir € entre usuarios fácilmente.\n"
-                "• Consultar el top económico del servidor.\n\n"
-                "🎯 ¿Para qué sirve todo esto?\n"
-                "Para que puedas **ganar dinero virtual** sin tener que usar dinero real, participar en **eventos exclusivos** y ganar **recompensas gratis** 🤑🎁\n\n"
-                "📝 De momento contamos con:\n"
-                "• **【🛒-𝙏𝙄𝙀𝙉𝘿𝘼】** – Canjeá tu saldo por objetos disponibles y consultá los precios."
-                "• **【📝-𝙍𝙀𝙎𝙀Ñ𝘼𝙎】** – Escribí reseñas y generá €.\n"
+                "📌 En esta sección vas a encontrar todo lo relacionado con la **economía interna** del servidor.\n\n"
+                f"🏦 En {canal_banco.mention} podés:\n"
+                "• Consultar tu saldo y el de otros miembros.\n"
+                "• Pasar € a otros usuarios de forma rápida.\n"
+                "• Ver el top económico del servidor.\n\n"
+                f"🛍️ En {canal_tienda.mention}:\n"
+                "• Encontrás todos los productos disponibles.\n"
+                "• Cada uno con su precio correspondiente en €.\n\n"
+                f"📝 En {canal_resenas.mention}:\n"
+                "• Podés escribir reseñas y generar € gratis.\n"
+                "• Cuanto mejor sea tu reseña, mayor la recompensa.\n\n"
+                "🎯 ¿Por qué usamos esto?\n"
+                "Para que puedas **participar en eventos** y obtener **recompensas gratis** sin necesidad de usar dinero real 🤑🎁"
             ),
             color=discord.Color.gold()
         )
-        embed.set_footer(text="1€Bot • Sistema Económico Local del Servidor")
+        embed.set_footer(text="1€Bot • Sistema de economía")
         await ctx.send(embed=embed)
-
 
 # ──────────────────────── Setup para discord.py v2.x ────────────────────────
 async def setup(bot: commands.Bot) -> None:
