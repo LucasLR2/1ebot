@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 DB_URL = os.getenv("DATABASE_URL")
 
 # Constantes
-MAX_AMOUNT = 1000000.0
+MAX_AMOUNT = 10.0
 MIN_AMOUNT = 0.01
 
 def format_currency(amount: float) -> str:
