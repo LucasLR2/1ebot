@@ -17,7 +17,7 @@ MAX_AMOUNT = 1000000.0
 MIN_AMOUNT = 0.01
 
 def format_currency(amount: float) -> str:
-    return f"€{amount:,.2f}"
+    return f"{amount:,.2f}€"
 
 async def connect():
     try:
@@ -240,7 +240,7 @@ class Economia(commands.Cog):
                     WHERE user_id = $2 AND guild_id = $3;
                 """, amount, user_id, guild_id)
 
-            await ctx.send(f"Se añadieron €{amount:,.2f} a {member.mention}.")
+            await ctx.send(f"Se añadieron {amount:,.2f}€ a {member.mention}.")
             logger.info(f"Admin {ctx.author.id} añadió {amount} a {member.id} en guild {guild_id}")
 
         except Exception as e:
@@ -280,7 +280,7 @@ class Economia(commands.Cog):
                     WHERE user_id = $2 AND guild_id = $3;
                 """, new_balance, user_id, guild_id)
 
-            await ctx.send(f"Se removieron €{actual_removed:,.2f} de {member.mention}.")
+            await ctx.send(f"Se removieron {actual_removed:,.2f}€ de {member.mention}.")
             logger.info(f"Admin {ctx.author.id} removió {actual_removed} de {member.id} en guild {guild_id}")
 
         except Exception as e:
