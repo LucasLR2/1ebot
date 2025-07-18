@@ -6,12 +6,11 @@ from datetime import datetime, timezone
 class UserCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.user_commands_channel_id = 1392893710848622734  # Canal de comandos de usuarios
+        self.user_commands_channel_id = 1392893710848622734
         self.bump_data_file = "bump_data.json"
         self.bump_data = self.load_bump_data()
 
-        # Aquí ponés la ID del rol que querés asignar cuando usen "entrada"
-        self.rol_entrada_id = 123456789012345678  # <-- Cambialo por la ID real del rol
+        self.rol_entrada_id = 1394791826812043326
 
     def load_bump_data(self) -> dict:
         try:
