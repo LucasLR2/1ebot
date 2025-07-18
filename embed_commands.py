@@ -280,24 +280,26 @@ class EmbedCommands(commands.Cog):
         embed = discord.Embed(
             title="💸 𝑭𝑼𝑵𝑪𝑰𝑶𝑵𝑨𝑴𝑰𝑬𝑵𝑻𝑶 – Economía del Servidor",
             description=(
-                "📌 En esta sección vas a encontrar todo lo relacionado con la **economía interna** del servidor.\n\n"
-                f"En {canal_banco.mention} podés:\n"
+                "📢 💸 ¡La economía del servidor ya está disponible!\n\n"
+                "Desde ahora puedes usar el sistema económico interno del servidor para ganar recompensas, participar en eventos y comprar productos sin gastar dinero real.\n\n"
+                "📍 Aquí te dejamos cómo funciona:\n\n"
+                f"En {canal_banco.mention} puedes:\n"
                 "• Consultar tu saldo y el de otros miembros.\n"
-                "• Pasar € a otros usuarios de forma rápida.\n"
+                "• Enviar € a otros usuarios de forma rápida.\n"
                 "• Ver el top económico del servidor.\n\n"
                 f"En {canal_tienda.mention}:\n"
-                "• Encontrás todos los productos disponibles.\n"
+                "• Encontrarás todos los productos disponibles.\n"
                 "• Cada uno con su precio correspondiente en €.\n\n"
                 f"En {canal_resenas.mention}:\n"
-                "• Podés escribir reseñas y generar € gratis.\n"
-                "• Cuanto mejor sea tu reseña, mayor la recompensa.\n\n"
-                "¿Por qué usamos esto?\n"
-                "Para que puedas **participar en eventos** y obtener **recompensas gratis** sin necesidad de usar dinero real 🤑🎁"
+                "• Puedes hacer reseñas para ganar € gratis.\n"
+                "• Cuanto mejor sea tu reseña, mayor será la recompensa.\n\n"
+                "🎁 ¡Empieza a ganar, ahorrar y participar usando solo tu actividad dentro del servidor!"
             ),
             color=discord.Color.gold()
         )
         embed.set_footer(text="Economía • 1€Bot")
         await ctx.send(embed=embed)
+
 
     @commands.command(name='etienda')
     @commands.has_permissions(administrator=True)
