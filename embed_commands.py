@@ -281,17 +281,17 @@ class EmbedCommands(commands.Cog):
             title="💸 𝑭𝑼𝑵𝑪𝑰𝑶𝑵𝑨𝑴𝑰𝑬𝑵𝑻𝑶 – Economía del Servidor",
             description=(
                 "📌 En esta sección vas a encontrar todo lo relacionado con la **economía interna** del servidor.\n\n"
-                f"🏦 En {canal_banco.mention} podés:\n"
+                f"En {canal_banco.mention} podés:\n"
                 "• Consultar tu saldo y el de otros miembros.\n"
                 "• Pasar € a otros usuarios de forma rápida.\n"
                 "• Ver el top económico del servidor.\n\n"
-                f"🛍️ En {canal_tienda.mention}:\n"
+                f"En {canal_tienda.mention}:\n"
                 "• Encontrás todos los productos disponibles.\n"
                 "• Cada uno con su precio correspondiente en €.\n\n"
-                f"📝 En {canal_resenas.mention}:\n"
+                f"En {canal_resenas.mention}:\n"
                 "• Podés escribir reseñas y generar € gratis.\n"
                 "• Cuanto mejor sea tu reseña, mayor la recompensa.\n\n"
-                "🎯 ¿Por qué usamos esto?\n"
+                "¿Por qué usamos esto?\n"
                 "Para que puedas **participar en eventos** y obtener **recompensas gratis** sin necesidad de usar dinero real 🤑🎁"
             ),
             color=discord.Color.gold()
