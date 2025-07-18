@@ -26,7 +26,11 @@ class UserCommands(commands.Cog):
     @commands.command(name="misbumps")
     async def misbumps(self, ctx: commands.Context):
         if ctx.channel.id != self.user_commands_channel_id:
-            await ctx.send(f"⚠️ Este comando sólo puede usarse en <#{self.user_commands_channel_id}>.")
+            embed = discord.Embed(
+                description=f"⚠️ Este comando sólo puede usarse en <#{self.user_commands_channel_id}>.",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
             return
 
         from database import get_bumps
@@ -44,7 +48,11 @@ class UserCommands(commands.Cog):
         productos = await self.bot.db.fetch("SELECT nombre, precio FROM tienda ORDER BY precio ASC")
 
         if not productos:
-            await ctx.send("📦 La tienda está vacía. Esperá a que un admin agregue productos.")
+            embed = discord.Embed(
+                description="📦 La tienda está vacía. Esperá a que un admin agregue productos.",
+                color=discord.Color.orange()
+            )
+            await ctx.send(embed=embed)
             return
 
         descripcion = "\n".join([f"• **{p['nombre']}** – {p['precio']}€" for p in productos])
@@ -68,7 +76,11 @@ class UserCommands(commands.Cog):
         """, miembro.id)
 
         if not objetos:
-            await ctx.send(f"🎒 {miembro.display_name} no tiene objetos todavía.")
+            embed = discord.Embed(
+                description=f"🎒 {miembro.display_name} no tiene objetos todavía.",
+                color=discord.Color.orange()
+            )
+            await ctx.send(embed=embed)
             return
 
         descripcion = "\n".join([f"• {o['nombre']} × {o['cantidad']}" for o in objetos])
@@ -91,7 +103,11 @@ class UserCommands(commands.Cog):
             nombre_objeto
         )
         if not producto:
-            await ctx.send("❌ Ese objeto no existe. Usá `!tienda` para ver los productos.")
+            embed = discord.Embed(
+                description="❌ Ese objeto no existe. Usá `!tienda` para ver los productos.",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
             return
 
         # Consultar o crear saldo
@@ -109,7 +125,11 @@ class UserCommands(commands.Cog):
             balance = cuenta["balance"]
 
         if balance < producto["precio"]:
-            await ctx.send(f"💸 No tenés suficiente saldo para comprar **{producto['nombre']}**.")
+            embed = discord.Embed(
+                description=f"💸 No tenés suficiente saldo para comprar **{producto['nombre']}**.",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
             return
 
         # Descontar dinero
@@ -135,10 +155,13 @@ class UserCommands(commands.Cog):
             )
 
         nuevo_saldo = balance - producto["precio"]
-        await ctx.send(
-            f"✅ Has comprado **{producto['nombre']}** por {producto['precio']}€.\n"
-            f"💰 Saldo restante: **{nuevo_saldo:.2f}€**"
+        embed = discord.Embed(
+            title="Compra exitosa 🛒",
+            description=f"✅ Has comprado **{producto['nombre']}** por {producto['precio']}€.\n"
+                        f"💰 Saldo restante: **{nuevo_saldo:.2f}€**",
+            color=discord.Color.green()
         )
+        await ctx.send(embed=embed)
 
     @commands.command(name='usar')
     async def usar_objeto(self, ctx, *, nombre_objeto: str):
@@ -152,7 +175,11 @@ class UserCommands(commands.Cog):
             nombre_objeto
         )
         if not producto:
-            await ctx.send("❌ Ese objeto no existe.")
+            embed = discord.Embed(
+                description="❌ Ese objeto no existe.",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
             return
 
         objeto_id = producto['id']
@@ -164,7 +191,11 @@ class UserCommands(commands.Cog):
             ctx.author.id, objeto_id
         )
         if not inventario or inventario['cantidad'] < 1:
-            await ctx.send("❌ No tenés ese objeto en tu inventario.")
+            embed = discord.Embed(
+                description="❌ No tenés ese objeto en tu inventario.",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
             return
 
         # Restar 1 del inventario o borrar si queda 0
@@ -183,19 +214,39 @@ class UserCommands(commands.Cog):
         if nombre_objeto == "entrada":
             rol = guild.get_role(self.rol_entrada_id)
             if not rol:
-                await ctx.send("❌ No se encontró el rol para asignar.")
+                embed = discord.Embed(
+                    description="❌ No se encontró el rol para asignar.",
+                    color=discord.Color.red()
+                )
+                await ctx.send(embed=embed)
                 return
             try:
                 await ctx.author.add_roles(rol, reason=f"Usó el objeto {nombre_real}")
             except discord.Forbidden:
-                await ctx.send("❌ No tengo permisos para asignarte el rol.")
+                embed = discord.Embed(
+                    description="❌ No tengo permisos para asignarte el rol.",
+                    color=discord.Color.red()
+                )
+                await ctx.send(embed=embed)
                 return
             except Exception as e:
-                await ctx.send(f"❌ Error al asignar el rol: {e}")
+                embed = discord.Embed(
+                    description=f"❌ Error al asignar el rol: {e}",
+                    color=discord.Color.red()
+                )
+                await ctx.send(embed=embed)
                 return
-            await ctx.send(f"✅ {ctx.author.mention} usó **{nombre_real}** y se le asignó el rol **{rol.name}**.")
+            embed = discord.Embed(
+                description=f"✅ {ctx.author.mention} usó **{nombre_real}** y se le asignó el rol **{rol.name}**.",
+                color=discord.Color.green()
+            )
+            await ctx.send(embed=embed)
         else:
-            await ctx.send(f"✅ {ctx.author.mention} usó **{nombre_real}**.")
+            embed = discord.Embed(
+                description=f"✅ {ctx.author.mention} usó **{nombre_real}**.",
+                color=discord.Color.green()
+            )
+            await ctx.send(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(UserCommands(bot))
