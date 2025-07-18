@@ -10,6 +10,9 @@ class UserCommands(commands.Cog):
         self.bump_data_file = "bump_data.json"
         self.bump_data = self.load_bump_data()
 
+        # Aquí ponés la ID del rol que querés asignar cuando usen "entrada"
+        self.rol_entrada_id = 123456789012345678  # <-- Cambialo por la ID real del rol
+
     def load_bump_data(self) -> dict:
         try:
             with open(self.bump_data_file, "r", encoding="utf-8") as f:
@@ -137,6 +140,63 @@ class UserCommands(commands.Cog):
             f"✅ Has comprado **{producto['nombre']}** por {producto['precio']}€.\n"
             f"💰 Saldo restante: **{nuevo_saldo:.2f}€**"
         )
+
+    @commands.command(name='usar')
+    async def usar_objeto(self, ctx, *, nombre_objeto: str):
+        nombre_objeto = nombre_objeto.lower()
+        user_id = str(ctx.author.id)
+        guild = ctx.guild
+
+        # Buscar objeto en tienda
+        producto = await self.bot.db.fetchrow(
+            "SELECT id, nombre FROM tienda WHERE LOWER(nombre) = $1",
+            nombre_objeto
+        )
+        if not producto:
+            await ctx.send("❌ Ese objeto no existe.")
+            return
+
+        objeto_id = producto['id']
+        nombre_real = producto['nombre']
+
+        # Verificar si el usuario tiene el objeto en inventario
+        inventario = await self.bot.db.fetchrow(
+            "SELECT id, cantidad FROM inventario WHERE usuario_id = $1 AND objeto_id = $2",
+            ctx.author.id, objeto_id
+        )
+        if not inventario or inventario['cantidad'] < 1:
+            await ctx.send("❌ No tenés ese objeto en tu inventario.")
+            return
+
+        # Restar 1 del inventario o borrar si queda 0
+        if inventario['cantidad'] == 1:
+            await self.bot.db.execute(
+                "DELETE FROM inventario WHERE id = $1",
+                inventario['id']
+            )
+        else:
+            await self.bot.db.execute(
+                "UPDATE inventario SET cantidad = cantidad - 1 WHERE id = $1",
+                inventario['id']
+            )
+
+        # Solo para el objeto "entrada" asignar el rol
+        if nombre_objeto == "entrada":
+            rol = guild.get_role(self.rol_entrada_id)
+            if not rol:
+                await ctx.send("❌ No se encontró el rol para asignar.")
+                return
+            try:
+                await ctx.author.add_roles(rol, reason=f"Usó el objeto {nombre_real}")
+            except discord.Forbidden:
+                await ctx.send("❌ No tengo permisos para asignarte el rol.")
+                return
+            except Exception as e:
+                await ctx.send(f"❌ Error al asignar el rol: {e}")
+                return
+            await ctx.send(f"✅ {ctx.author.mention} usó **{nombre_real}** y se le asignó el rol **{rol.name}**.")
+        else:
+            await ctx.send(f"✅ {ctx.author.mention} usó **{nombre_real}**.")
 
 async def setup(bot):
     await bot.add_cog(UserCommands(bot))
