@@ -64,18 +64,18 @@ class UserCommands(commands.Cog):
         embed.set_footer(text="Usá !comprar nombre_del_objeto para adquirirlo")
         await ctx.send(embed=embed)
 
-    @commands.command(name='objetos')
-    async def ver_objetos(self, ctx, miembro: discord.Member = None):
+    @commands.command(name='inventario')
+    async def ver_inventario(self, ctx, miembro: discord.Member = None):
         miembro = miembro or ctx.author
 
-        objetos = await self.bot.db.fetch("""
+        inventario = await self.bot.db.fetch("""
             SELECT t.nombre, i.cantidad
             FROM inventario i
             JOIN tienda t ON i.objeto_id = t.id
             WHERE i.usuario_id = $1
         """, miembro.id)
 
-        if not objetos:
+        if not inventario:
             embed = discord.Embed(
                 description=f"🎒 {miembro.display_name} no tiene objetos todavía.",
                 color=discord.Color.orange()
@@ -83,9 +83,9 @@ class UserCommands(commands.Cog):
             await ctx.send(embed=embed)
             return
 
-        descripcion = "\n".join([f"• {o['nombre']} × {o['cantidad']}" for o in objetos])
+        descripcion = "\n".join([f"• {o['nombre']} × {o['cantidad']}" for o in inventario])
         embed = discord.Embed(
-            title=f"🎒 Objetos de {miembro.display_name}",
+            title=f"🎒 Inventario de {miembro.display_name}",
             description=descripcion,
             color=discord.Color.blue()
         )

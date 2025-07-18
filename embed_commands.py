@@ -311,8 +311,9 @@ class EmbedCommands(commands.Cog):
                 "• Comprar artículos exclusivos con comandos sencillos.\n\n"
                 "💬 **Comandos disponibles:**\n"
                 "`!tienda` – Muestra todos los productos disponibles.\n"
-                "`!objetos` – Muestra tus productos.\n"
-                "`!comprar nombre_del_objeto` – Compra un objeto si tenés suficiente saldo.\n\n"
+                "`!inventario` – Muestra tus objetos.\n"
+                "`!comprar nombre_del_objeto` – Compra un objeto si tenés suficiente saldo.\n"
+                "`!usar nombre_del_objeto` – Usa el objeto que quieras si es que lo tienes en el inventario.\n\n"
             ),
             color=discord.Color.teal()
         )
