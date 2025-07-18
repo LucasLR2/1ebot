@@ -3,7 +3,7 @@ from discord.ext import commands
 import os
 from dotenv import load_dotenv
 import asyncio
-from database import setup
+from database import setup, connect  # ← Asegúrate de importar también `connect`
 
 load_dotenv()
 
@@ -22,13 +22,16 @@ async def on_ready():
 
 async def main():
     async with bot:
+        await setup()
+        bot.db = await connect()  # ✅ Conexión global para usar en cogs como `self.bot.db`
+
         await bot.load_extension("admin_commands")
         await bot.load_extension("bump_tracker")
         await bot.load_extension("channelcontrol")
         await bot.load_extension("usercommands")
         await bot.load_extension("embed_commands")
         await bot.load_extension("economia")
-        await setup()
+
         await bot.start(os.getenv('TOKEN'))
 
 asyncio.run(main())

@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 class UserCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.user_commands_channel_id = 1392893710848622734  # ID real del canal
+        self.user_commands_channel_id = 1392893710848622734  # Canal de comandos de usuarios
         self.bump_data_file = "bump_data.json"
         self.bump_data = self.load_bump_data()
 
@@ -14,7 +14,6 @@ class UserCommands(commands.Cog):
         try:
             with open(self.bump_data_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            # Aseguramos que las keys sean int (user_id)
             return {int(k): v for k, v in data.items()}
         except (FileNotFoundError, json.JSONDecodeError):
             return {}
@@ -29,11 +28,10 @@ class UserCommands(commands.Cog):
             return
 
         from database import get_bumps
-
         bumps = await get_bumps(ctx.author.id, ctx.guild.id)
 
         embed = discord.Embed(
-            description=f"💪 {ctx.author.mention}, actualmente tienes **{bumps}** bumps en total. ¡Excelente trabajo!",
+            description=f"💪 {ctx.author.mention}, actualmente tenés **{bumps}** bumps en total. ¡Excelente trabajo!",
             color=0x00ffff,
             timestamp=datetime.now(timezone.utc)
         )
@@ -48,7 +46,6 @@ class UserCommands(commands.Cog):
             return
 
         descripcion = "\n".join([f"• **{p['nombre']}** – {p['precio']}€" for p in productos])
-
         embed = discord.Embed(
             title="🛒 Productos Disponibles",
             description=descripcion,
@@ -73,7 +70,6 @@ class UserCommands(commands.Cog):
             return
 
         descripcion = "\n".join([f"• {o['nombre']} × {o['cantidad']}" for o in objetos])
-
         embed = discord.Embed(
             title=f"🎒 Objetos de {miembro.display_name}",
             description=descripcion,
@@ -87,24 +83,21 @@ class UserCommands(commands.Cog):
         user_id = str(ctx.author.id)
         guild_id = str(ctx.guild.id)
 
-        # Obtener el objeto de la tienda
+        # Buscar producto en tienda
         producto = await self.bot.db.fetchrow(
             "SELECT id, nombre, precio FROM tienda WHERE LOWER(nombre) = $1",
             nombre_objeto
         )
-
         if not producto:
             await ctx.send("❌ Ese objeto no existe. Usá `!tienda` para ver los productos.")
             return
 
-        # Obtener el saldo del usuario o crear cuenta si no existe
+        # Consultar o crear saldo
         cuenta = await self.bot.db.fetchrow(
             "SELECT balance FROM euros WHERE user_id = $1 AND guild_id = $2",
             user_id, guild_id
         )
-
         if not cuenta:
-            # Crear cuenta con saldo 0
             await self.bot.db.execute(
                 "INSERT INTO euros (user_id, guild_id, balance) VALUES ($1, $2, 0)",
                 user_id, guild_id
@@ -117,18 +110,17 @@ class UserCommands(commands.Cog):
             await ctx.send(f"💸 No tenés suficiente saldo para comprar **{producto['nombre']}**.")
             return
 
-        # Descontar el precio del objeto
+        # Descontar dinero
         await self.bot.db.execute(
             "UPDATE euros SET balance = balance - $1 WHERE user_id = $2 AND guild_id = $3",
             producto["precio"], user_id, guild_id
         )
 
-        # Ver si ya tenía el objeto
+        # Verificar si ya tiene el objeto
         existente = await self.bot.db.fetchrow(
             "SELECT id, cantidad FROM inventario WHERE usuario_id = $1 AND objeto_id = $2",
             ctx.author.id, producto['id']
         )
-
         if existente:
             await self.bot.db.execute(
                 "UPDATE inventario SET cantidad = cantidad + 1 WHERE id = $1",
@@ -145,7 +137,6 @@ class UserCommands(commands.Cog):
             f"✅ Has comprado **{producto['nombre']}** por {producto['precio']}€.\n"
             f"💰 Saldo restante: **{nuevo_saldo:.2f}€**"
         )
-
 
 async def setup(bot):
     await bot.add_cog(UserCommands(bot))
