@@ -363,29 +363,14 @@ class EmbedCommands(commands.Cog):
             contenido_msg = await self.bot.wait_for('message', check=check, timeout=120)
             contenido = contenido_msg.content
 
-            # Buscar si hay un link para poner afuera
-            palabras = contenido.split()
-            link = None
-            for palabra in palabras:
-                if palabra.startswith("http://") or palabra.startswith("https://"):
-                    link = palabra
-                    palabras.remove(palabra)
-                    break
-
-            contenido_sin_link = " ".join(palabras)
-
-            embed = discord.Embed(
-                title="🤝 ¿Qué es un partner?",
-                description=contenido_sin_link,
-                color=discord.Color.blue()
+            mensaje_formateado = (
+                "🤝 **¿Qué es un partner?**\n\n"
+                f"{contenido}\n\n"
+                "────────────────────\n"
+                "*Información publicada por el staff • 1€Bot*"
             )
-            embed.set_footer(text="Información de Partner • 1€Bot")
 
-            # Enviar el mensaje con el link afuera del embed
-            if link:
-                await canal_destino.send(content=link, embed=embed)
-            else:
-                await canal_destino.send(embed=embed)
+            await canal_destino.send(mensaje_formateado)
 
             await ctx.send("✅ El contenido del partner fue enviado correctamente.")
 
@@ -393,9 +378,6 @@ class EmbedCommands(commands.Cog):
             await ctx.send("⌛ Se acabó el tiempo. Ejecutá `!partner` de nuevo.")
         except Exception as e:
             await ctx.send(f"❌ Ocurrió un error: {str(e)}")
-
-
-
 # ──────────────────────── Setup para discord.py v2.x ────────────────────────
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(EmbedCommands(bot))
