@@ -346,7 +346,7 @@ class EmbedCommands(commands.Cog):
     @commands.command(name="partner")
     @commands.has_permissions(administrator=True)
     async def partner(self, ctx):
-        canal_id_partner = 1391833217815941253  # Reemplazá por el ID del canal donde querés que lo mande
+        canal_id_partner = 1399434651428323399
 
         canal_destino = ctx.guild.get_channel(canal_id_partner)
 
