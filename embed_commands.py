@@ -364,10 +364,8 @@ class EmbedCommands(commands.Cog):
             contenido = contenido_msg.content
 
             mensaje_formateado = (
-                "🤝 **¿Qué es un partner?**\n\n"
-                f"{contenido}\n\n"
-                "────────────────────\n"
-                "*Información publicada por el staff • 1€Bot*"
+                "🤝 **PARTNER**\n\n"
+                f"{contenido}\n"
             )
 
             await canal_destino.send(mensaje_formateado)
