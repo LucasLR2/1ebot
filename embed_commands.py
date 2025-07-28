@@ -322,6 +322,28 @@ class EmbedCommands(commands.Cog):
         embed.set_footer(text="Economía • 1€Bot")
         await ctx.send(embed=embed)
 
+    @commands.command(name='plantilla')
+    @commands.has_permissions(administrator=True)
+    async def brawlpass(self, ctx):
+        embed = discord.Embed(
+            title="🚀 1€ BRAWL PASS PLUS 🚀",
+            description=(
+                "Consigue tu Brawl Pass Plus de forma fácil:\n\n"
+                "🎮 Por solo **1€**\n"
+                "🏆 Participa en torneos y eventos y gana el **Brawl Pass Plus** como premio\n"
+                "🎁 Consigue el BPP gratis si eres activo\n"
+                "💰 Gana dinero real en nuestro servidor\n"
+                "👥 Comunidad activa con canales de charla y juego\n"
+                "🛒 Compra directa disponible por **9€**\n\n"
+                "¡Únete ya y empieza a disfrutar!\n"
+                "🔗 https://discord.gg/QTPQDbrQZK"
+            ),
+            color=discord.Color.gold()
+        )
+        embed.set_footer(text="1€ BRAWL PASS PLUS • Servidor Oficial")
+        await ctx.send(embed=embed)
+
+
 # ──────────────────────── Setup para discord.py v2.x ────────────────────────
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(EmbedCommands(bot))
