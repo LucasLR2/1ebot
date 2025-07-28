@@ -343,6 +343,43 @@ class EmbedCommands(commands.Cog):
         embed.set_footer(text="1€ BRAWL PASS PLUS • Servidor Oficial")
         await ctx.send(embed=embed)
 
+    @commands.command(name="partner")
+    @commands.has_permissions(administrator=True)
+    async def partner(self, ctx):
+        canal_id_partner = 1391833217815941253  # Reemplazá por el ID del canal donde querés que lo mande
+
+        canal_destino = ctx.guild.get_channel(canal_id_partner)
+
+        def check(m):
+            return m.author == ctx.author and m.channel == ctx.channel
+
+        try:
+            if canal_destino is None:
+                await ctx.send("❌ No pude encontrar el canal de partners. Revisá el ID.")
+                return
+
+            await ctx.send("💬 Dime el contenido del partner:")
+
+            contenido_msg = await self.bot.wait_for('message', check=check, timeout=120)
+            contenido = contenido_msg.content
+
+            embed = discord.Embed(
+                title="🤝 Partner",
+                description=contenido,
+                color=discord.Color.blue()
+            )
+            embed.set_footer(text="Información de Partner • 1€Bot")
+
+            await canal_destino.send(embed=embed)
+
+            await ctx.send("✅ El contenido del partner fue enviado correctamente.")
+
+        except asyncio.TimeoutError:
+            await ctx.send("⌛ Se acabó el tiempo. Ejecutá `!partner` de nuevo.")
+        except Exception as e:
+            await ctx.send(f"❌ Ocurrió un error: {str(e)}")
+
+
 
 # ──────────────────────── Setup para discord.py v2.x ────────────────────────
 async def setup(bot: commands.Bot) -> None:
